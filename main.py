@@ -122,7 +122,7 @@ class MainWindow(QWidget):
             self.use_numbers(".")
 
     def operation_click(self):
-        """Функция для обработки сигналов нажатия на кнопки с действиями."""
+        """Функция для обработки сигналов нажатия на кнопки с действиями"""
         sender = self.sender()
         if sender.text() == "+":
             self.use_operation("+")
