@@ -6,6 +6,7 @@ from math import sqrt
 
 
 class MainWindow(QWidget):
+    """Калькулятор"""
     def __init__(self):
         super().__init__()
         self.label = QLabel(self)
@@ -28,7 +29,7 @@ class MainWindow(QWidget):
         self.button_sqr = QPushButton("xⁿ", self)
         self.button_sqr.setToolTip("Комбинация клавиш: shift+^")
         self.button_sqrt = QPushButton("√", self)
-        self.button_sqrt.setToolTip("Клавиша: s")
+        self.button_sqrt.setToolTip("Клавиша: s, запись: число√=")
         self.button_equal = QPushButton("=", self)
         self.button_0.clicked.connect(self.number_click)
         self.button_1.clicked.connect(self.number_click)
@@ -58,7 +59,7 @@ class MainWindow(QWidget):
         self.resize(250, 321)
         self.setWindowTitle("Калькулятор")
         self.setWindowIcon(QIcon(r"calculator\img\caculation.png"))
-        self.lcd.setMaximumHeight(200)
+        self.lcd.setMaximumHeight(300)
         self.label.setMaximumHeight(10)
         vbox = QVBoxLayout()
         vbox.addWidget(self.label)
@@ -96,55 +97,23 @@ class MainWindow(QWidget):
         self.setLayout(vbox)
 
     def number_click(self):
-        """Функция для обработки сигналов нажатия на кнопки с цифрами."""
+        """Функция для обработки сигналов нажатия на кнопки с цифрами"""
         sender = self.sender()
-        if sender.text() == "0":
-            self.use_numbers("0")
-        elif sender.text() == "1":
-            self.use_numbers("1")
-        elif sender.text() == "2":
-            self.use_numbers("2")
-        elif sender.text() == "3":
-            self.use_numbers("3")
-        elif sender.text() == "4":
-            self.use_numbers("4")
-        elif sender.text() == "5":
-            self.use_numbers("5")
-        elif sender.text() == "6":
-            self.use_numbers("6")
-        elif sender.text() == "7":
-            self.use_numbers("7")
-        elif sender.text() == "8":
-            self.use_numbers("8")
-        elif sender.text() == "9":
-            self.use_numbers("9")
-        elif sender.text() == ".":
-            self.use_numbers(".")
+        self.use_numbers(sender.text())
 
     def operation_click(self):
-        """Функция для обработки сигналов нажатия на кнопки с действиями."""
+        """Функция для обработки сигналов нажатия на кнопки с действиями"""
         sender = self.sender()
-        if sender.text() == "+":
-            self.use_operation("+")
-        elif sender.text() == "-":
-            self.use_operation("-")
-        elif sender.text() == "*":
-            self.use_operation("*")
-        elif sender.text() == "/":
-            self.use_operation("/")
-        elif sender.text() == "xⁿ":
-            self.use_operation("xⁿ")
-        elif sender.text() == "√":
-            self.use_operation("√")
-        elif sender.text() == "=":
-            self.get_result()
+        self.use_operation(sender.text())
 
     def keyPressEvent(self, event):
-        """Функция обработчик нажатия клавиши."""
+        """Функция обработчик нажатия клавиши"""
+        if event.key() == Qt.Key.Key_Escape:
+            self.close()
         if event.key() == Qt.Key.Key_Backspace:
             self.erase()
             self.lcd.display("0")
-        elif event.key() == Qt.Key.Key_0:
+        if event.key() == Qt.Key.Key_0:
             self.use_numbers("0")
         elif event.key() == Qt.Key.Key_1:
             self.use_numbers("1")
@@ -166,7 +135,7 @@ class MainWindow(QWidget):
             self.use_numbers("9")
         elif event.key() == 46:
             self.use_numbers(".")
-        elif event.key() == 43:
+        elif event.key() == Qt.Key.Key_Plus:
             self.use_operation("+")
         elif event.key() == Qt.Key.Key_Minus:
             self.use_operation("-")
@@ -180,56 +149,28 @@ class MainWindow(QWidget):
             self.use_operation("√")
         elif event.key() == 61:
             self.get_result()
-        if event.key() == Qt.Key.Key_Escape:
-            self.close()
 
     def get_result(self):
-        """Функция дял получения результата и вывода"""
-        if "." in self.number or "." in self.number2:
-            try:
-                if self.expression == "+":
-                    self.result = eval(self.number + self.expression + self.number2)
-                elif self.expression == "-":
-                    self.result = eval(self.number + self.expression + self.number2)
-                elif self.expression == "*":
-                    self.result = eval(self.number + self.expression + self.number2)
-                elif self.expression == "/":
-                    self.result = eval(self.number + self.expression + self.number2)
-                elif self.expression == "xⁿ":
-                    self.result = eval(self.number + "**" + self.number2)
-                elif self.expression == "√":
-                    self.result = sqrt(eval(self.number))
-                string = str(self.result)
-                if string.split(".")[1] == "0":
-                    self.result = string.split(".")[0]
-            except:
-                self.result = "Err"
-        else:
-            try:
-                if self.expression == "+":
-                    self.result = eval(self.number + self.expression + self.number2)
-                elif self.expression == "-":
-                    self.result = eval(self.number + self.expression + self.number2)
-                elif self.expression == "*":
-                    self.result = eval(self.number + self.expression + self.number2)
-                elif self.expression == "/":
-                    self.result = eval(self.number + self.expression + self.number2)
-                elif self.expression == "xⁿ":
-                    self.result = eval(self.number + "**" + self.number2)
-                elif self.expression == "√":
-                    self.result = sqrt(eval(self.number))
-            except:
-                self.result = "Err"
+        """Функция вычисления и вывода результата"""
+        try:
+            if self.expression == "xⁿ":
+                self.result = eval(self.number + "**" + self.number2)
+            elif self.expression == "√":
+                self.result = sqrt(eval(self.number))
+            else:
+                self.result = eval(self.number + self.expression + self.number2)
+        except:
+            self.result = "Err"
         self.lcd.display(self.result)
         self.erase()
 
     def use_operation(self, operation):
-        """Функция для присваивания спец символа к переменной и вывода пустой строки"""
+        """Функция вывода операции"""
         self.expression = operation
         self.lcd.display("")
 
     def use_numbers(self, number):
-        """Функция для вывода числа"""
+        """Функция вывода числа"""
         if self.expression != "":
             self.number2 += number
             self.lcd.display(self.number2)
@@ -238,7 +179,7 @@ class MainWindow(QWidget):
             self.lcd.display(self.number)
 
     def erase(self):
-        """Функция для обнуления"""
+        """Функция обнуления"""
         self.number = ""
         self.number2 = ""
         self.result = ""
